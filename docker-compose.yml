@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx.dockerfile
+    container_name: game.nginx
+    ports:
+      - 8091:80
+    volumes:
+      - ./src:/var/www/html
+      - ./nginx/logs:/var/log/nginx
+    networks:
+      - game
+    depends_on:
+      - php
+  php:
+    build:
+      context: .
+      dockerfile: php.dockerfile
+    container_name: game.php
+    volumes:
+      - ./database:/var/www/database
+      - ./src:/var/www/html
+      - ./php/logs:/var/log/php
+    user: 1000:www-data
+    networks:
+      - game
+
+  composer:
+    image: composer:latest
+    container_name: game.composer
+    volumes:
+      - ./src:/var/www/html
+    working_dir: /var/www/html
+    user: 1000:www-data
+    networks:
+      - game
+
+  artisan:
+    build:
+      context: .
+      dockerfile: php.dockerfile
+    container_name: game.artisan
+    volumes:
+      - ./src:/var/www/html
+      - ./database:/var/www/database
+    working_dir: /var/www/html
+    entrypoint: ["php", "artisan"]
+    user: 1000:www-data
+    networks:
+      - game
+
+networks:
+  game:
+    driver: bridge
