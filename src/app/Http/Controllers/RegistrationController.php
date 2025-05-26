@@ -26,7 +26,7 @@ class RegistrationController extends Controller
             } catch (QueryException $e) {
                 if ($e->getCode() === '23000') { //Duplicate
                     return back()->withErrors([
-                        'general' => 'Username and Phonenumber  do not match previously provided data.'
+                        'general' => 'Username and Phonenumber do not match previously provided data.'
                     ]);
                 }
             } catch (\RuntimeException $e) {
